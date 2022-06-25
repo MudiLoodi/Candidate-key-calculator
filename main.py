@@ -1,6 +1,11 @@
 
 import functools
-
+def remove_duplicates(str):
+    newStr = ""
+    for char in str:
+        if char not in newStr:
+            newStr = newStr + char
+    return newStr
 
 def get_input():
     # R: A, B, C, D, E
@@ -9,7 +14,7 @@ def get_input():
     functional_depend_input = input("Enter the functional dependencies: ")
 
     attribute_lst = relation_input.split(",")
-    functional_depend_lst = functional_depend_input.replace(" ", "").split(",") # ["A->B", "D->C"]
+    functional_depend_lst = functional_depend_input.replace(" ", "").split(",") # ["A->B", "B->C", "C->A"]
     return attribute_lst, functional_depend_lst
 
 
@@ -43,26 +48,44 @@ closure = {}
 
 #if  len(attributes_not_left_right) == 0 and  len(attributes_left) == 0: # Check if lists are empty
 combination = attributes_not_left_right + attributes_left
-
+print("Combination ", combination)
 def get_closure(attributes):
     for i in range(0, len(functional_depend_lst)):
-        for attribute in attributes: # ["E", "D"]
-            if attribute in functional_depend_lst[i]:
-                closure[attribute] = functional_depend_lst[i].replace("->", " ")
-            elif attribute in closure: # Fixes bug where an attribute will be update because it is checked twice for different FD
-                pass
-            else:
-                closure[attribute] = attribute
+     #   for attr in attributes: # ["E", "D"]
+     #       if len(attr) == 1:
+     #           if attr in functional_depend_lst[i]:
+     #               closure[attr] = functional_depend_lst[i].replace("->", " ")
+     #           elif attr in closure: # Fixes bug where an attribute will be update because it is checked twice for different FD
+     #               pass
+     #           else:
+     #               closure[attr] = attr
+     #       elif len(attr) > 1: #['AD', 'BD', 'CD']
+        for attr_set in attributes:
+            for attr in attr_set:
+                if attr in functional_depend_lst[i][0 : functional_depend_lst[i].index("->")+2 :]: # ["A->B", "B->C", "C->A"]
+                    closure[attr] = functional_depend_lst[i][functional_depend_lst[i].index("->")+2 : ] + f" {attr}"  #functional_depend_lst[i].replace("->", " ")
+                elif attr in closure: # Fixes bug where an attribute will be update because it is checked twice for different FD
+                    pass
+                else:
+                    closure[attr] = attr
     closure_lst = list(functools.reduce(lambda x, y: x + y, closure.items()))
+    print("CLOSURE ", closure)
+    for i in range(0, len(closure.keys())):
+        for str in closure_lst:
+            if set(str).intersection(set(closure_lst[i])):
+                combined_closure = str.join(closure_lst[i])
+    #closure_str = "".join(closure_lst).replace(" ", "")
+    #closure_res = "".join(set(closure_str))
     print(closure)
-    closure_str = "".join(closure_lst).replace(" ", "")
-    closure_res = "".join(set(closure_str))
-    return closure_res
+    return remove_duplicates(combined_closure.replace(" ", ""))
 
-if len(get_closure(combination)) == len(attribute_lst):
-    print("Final ", get_closure(combination) )
+closure_result = get_closure(combination)
+
+if len(closure_result) == len(attribute_lst):
+    print("Final ", closure_result )
 else:
     perm = ["".join((x,y)) for x in attributes_both_left_right for y in combination] 
+    print("perm ", perm)
     print(get_closure(perm))
 
 
