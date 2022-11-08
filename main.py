@@ -70,6 +70,74 @@ combination = attributes_not_left_right + attributes_left # ['A', 'C', 'C'] #TOD
 
 print("Combination ", combination)
 
+""" def get_closure(attributes):
+    for i in range(0, len(functional_depend_lst)):
+     #   for attr in attributes: # ["E", "D"]
+     #       if len(attr) == 1:
+     #           if attr in functional_depend_lst[i]:
+     #               closure[attr] = functional_depend_lst[i].replace("->", " ")
+     #           elif attr in closure: # Fixes bug where an attribute will be update because it is checked twice for different FD
+     #               pass
+     #           else:
+     #               closure[attr] = attr
+     #       elif len(attr) > 1: #['AD', 'BD', 'CD']
+        for attr_set in attributes:
+            for attr in attr_set:
+                if attr in functional_depend_lst[i][0 : functional_depend_lst[i].index("->")+2 :]: # ["A->B", "B->C", "C->A"]
+                    closure[attr] = functional_depend_lst[i][functional_depend_lst[i].index("->")+2 : ] + f" {attr}"  #functional_depend_lst[i].replace("->", " ")
+                elif attr in closure: # Fixes bug where an attribute will be update because it is checked twice for different FD
+                    pass
+                else:
+                    closure[attr] = attr
+    closure_lst = list(functools.reduce(lambda x, y: x + y, closure.items()))
+    print("CLOSURE ", closure)
+    for i in range(0, len(closure.keys())):
+        for str in closure_lst:
+            if set(str).intersection(set(closure_lst[i])):
+                combined_closure = str.join(closure_lst[i])
+    #closure_str = "".join(closure_lst).replace(" ", "")
+    #closure_res = "".join(set(closure_str))
+    print(closure)
+    return remove_duplicates(combined_closure.replace(" ", "")) """
+
+
+
+def get_closure(attributes, determinant_attr): # Input: ['AD', 'BD', 'CD']
+
+    for attr in attributes:
+        print(attr)
+        if len(attr) >= 2:
+            separator = " "
+            sep = separator.join(attr) # A D
+            t = get_determinant_and_dependent_attr(functional_depend_lst)
+            for i in range(len(attr)):
+                if t[i][0] == sep[0]:
+                    initial_closure = sep  + "".join(t[i][1])
+            print("ini clos ", initial_closure)
+            get_closure(initial_closure, t)
+
+    # TODO: Find the closure for composite attributes
+
+
+
+    initial_closure = attributes #  = ['AD', 'BD', 'CD']
+    for attribute in initial_closure:
+        if attribute in attributes_left:
+            for i in range(len(determinant_attr)):
+                initial_closure.append(determinant_attr[i][1])
+    return initial_closure
+
+closure_result = get_closure(combination, determinant_attr)
+closure_result = list(dict.fromkeys(closure_result))
+
+if len(closure_result) == len(attribute_lst):
+    print("Final ", closure_result )
+else:
+    perm = ["".join((x,y)) for x in attributes_both_left_right for y in combination] 
+    print("perm ", perm)
+    determinant_attr = get_determinant_and_dependent_attr(perm)
+    print(get_closure(["AD"], determinant_attr)) 
+
 
 
 
