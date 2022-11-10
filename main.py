@@ -8,9 +8,7 @@ def remove_duplicates(str):
     return newStr
 
 def get_input():
-    # R: A, B, C, D, E
     relation_input = input("Enter the relation: ")
-    # A->B, D->C, C->A
     functional_depend_input = input("Enter the functional dependencies: ")
 
     attribute_lst = relation_input.split(",")
@@ -67,10 +65,9 @@ print("both left and right ", attributes_both_left_right) # ['D']
 
 closure = {}
 
-#if  len(attributes_not_left_right) == 0 and  len(attributes_left) == 0: # Check if lists are empty
-combination = ["".join(attributes_not_left_right + attributes_left)] # ['CAD'] #TODO: Remove duplicates
+possible_key = ["".join(attributes_not_left_right + attributes_left)] 
 
-print("Combination ", combination)
+print("Combination ", possible_key)
 
 def update_det_dep_lst(lst):
     lst_map = {i[0]: i[1] for i in lst}
@@ -85,53 +82,51 @@ def update_det_dep_lst(lst):
 
 def get_closure_single(attributes):
     default_deter_depend_lst = get_determinant_and_dependent_attr(functional_depend_lst)
-    result = "".join(attributes)
+    closure_result = "".join(attributes)
+    # TODO: Improve this
     updated_determinant_lst = update_det_dep_lst(default_deter_depend_lst)
     final_determinant_lst = update_det_dep_lst(updated_determinant_lst)
 
-    for i in range(len(result)):
+    for i in range(len(closure_result)):
         for j in range(len(default_deter_depend_lst)):
-            if result[i] in final_determinant_lst[j][0]:
-                #print(f"{result[i]} in {final_determinant_lst[j][0]}")
-                result = result + final_determinant_lst[j][1]
+            if closure_result[i] in final_determinant_lst[j][0]:
+                closure_result = closure_result + final_determinant_lst[j][1]
 
     # Remove duplicates
-    result = ''.join(dict.fromkeys(result))
-    return result
+    closure_result = ''.join(dict.fromkeys(closure_result))
+    return closure_result
 
 
-def get_closure(attributes): # Input: ['AD', 'BD', 'CD']
-    keys = []
+def get_closure(attributes): 
+    closure_res = []
     for attr in attributes:
         if len(attr) >= 2:
-            sep = " ".join(attr) # 
-            v = ""
-            #result = sep.replace(" ", "")
-            for i in sep:
-                v = (v + get_closure_single(i)).replace(" ", "")
-                if len(v) == len(attribute_lst):
-                    if len(attributes) > 1:
-                        keys.append(attr)
-                    else:
-                        keys.append(v)
-        else:
-            keys = get_closure_single(attributes)
-    return keys
+            # Seperate attribute if it is a composite
+            seperated_attributes = " ".join(attr).replace(" ", "") 
+            closure = ""
+            for attribute in seperated_attributes:
+                # Get the closure for each attribute
+                closure = (closure + get_closure_single(attribute)).replace(" ", "")
+                # Check if closure covers all attributes
+                if len(closure) == len(attribute_lst):
+                    closure_res.append(closure)
+    return closure_res
 
 
+def find_key(possible_keys, attribute_lst):
+    closure_result = get_closure(possible_key)
+    if len(list("".join(closure_result))) == len(attribute_lst):
+        return possible_keys
+    else:
+        perm = ["".join((x,y)) for x in attributes_both_left_right for y in possible_key]
+        closure_result = get_closure(perm)
+    return perm
 
-    # TODO: Find the closure for composite attributes
+
+print("\n")
+print("Key(s):", find_key(possible_key, attribute_lst))
 
 
-closure_result = get_closure(combination)
-
-if len(list("".join(closure_result))) == len(attribute_lst):
-    #print("Final: ", closure_result )
-    print("Key: ", combination) 
-else:
-    perm = ["".join((x,y)) for x in attributes_both_left_right for y in combination] # TODO Check what this returns
-    #print("perm ", perm)
-    print("Key: ", get_closure(perm)) 
  
 
 
