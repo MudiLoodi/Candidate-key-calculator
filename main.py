@@ -47,10 +47,12 @@ def categorize_attributes(fd_lst, attr_lst):
     attributes_left = [fd for fd in attributes_temp_left if fd not in attributes_temp_right]
     attributes_right = [fd for fd in attributes_temp_right if fd not in attributes_temp_left]
     attributes_both_left_right = [fd for fd in attributes_temp_left if fd in attributes_temp_right]
-
     attributes_not_left_right = []
+
+    joined_lst = [*attributes_left, *attributes_right, *attributes_both_left_right]
+
     for attribute in attr_lst:
-        if attribute.replace(" ", "") not in attributes_left + attributes_right + attributes_both_left_right:
+        if attribute.replace(" ", "") not in "".join(joined_lst):
             attributes_not_left_right.append(attribute.replace(" ", ""))
     return attributes_left, attributes_right, attributes_not_left_right, attributes_both_left_right
 
