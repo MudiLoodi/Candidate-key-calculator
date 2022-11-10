@@ -66,42 +66,71 @@ print("both left and right ", attributes_both_left_right) # ['D']
 closure = {}
 
 #if  len(attributes_not_left_right) == 0 and  len(attributes_left) == 0: # Check if lists are empty
-combination = ["".join(attributes_not_left_right + attributes_left)] # ['A', 'C', 'C'] #TODO: Remove duplicates
+combination = ["".join(attributes_not_left_right + attributes_left)] # ['CAD'] #TODO: Remove duplicates
 
 print("Combination ", combination)
 
-def get_closure(attributes): # Input: ['C', 'A', 'D']
+def update_det_dep_lst(lst):
+    lst_map = {i[0]: i[1] for i in lst}
+    for k, v in lst_map.items():
+        for c in v:
+            if c != k:
+                lst_map[k] += lst_map.get(c, "")
+    result = [[k, v] for k, v in lst_map.items()]
+    return result
 
+
+
+def get_closure_single(attributes):
+    default_deter_depend_lst = get_determinant_and_dependent_attr(functional_depend_lst)
+    result = "".join(attributes)
+    updated_determinant_lst = update_det_dep_lst(default_deter_depend_lst)
+    final_determinant_lst = update_det_dep_lst(updated_determinant_lst)
+
+    for i in range(len(result)):
+        for j in range(len(default_deter_depend_lst)):
+            if result[i] in final_determinant_lst[j][0]:
+                #print(f"{result[i]} in {final_determinant_lst[j][0]}")
+                result = result + final_determinant_lst[j][1]
+
+    # Remove duplicates
+    result = ''.join(dict.fromkeys(result))
+    return result
+
+
+def get_closure(attributes): # Input: ['AD', 'BD', 'CD']
+    keys = []
     for attr in attributes:
         if len(attr) >= 2:
-            separator = " "
-            sep = separator.join(attr) # C A D
-            t = get_determinant_and_dependent_attr(functional_depend_lst)
-            result = sep.replace(" ", "")# CAD
-            print("init ", result)
-            print("t ", t)
-            for i in range(len(result)):
-                for j in range(len(t)):
-                    if result[i] in t[j][0]:
-                        print(f"{result[i]} in {t[j][0]}")
-                        result = result + t[j][1]
-            # Remove duplicates
-            result = ''.join(dict.fromkeys(result))
-            
-            return result
+            sep = " ".join(attr) # 
+            v = ""
+            #result = sep.replace(" ", "")
+            for i in sep:
+                v = (v + get_closure_single(i)).replace(" ", "")
+                if len(v) == len(attribute_lst):
+                    if len(attributes) > 1:
+                        keys.append(attr)
+                    else:
+                        keys.append(v)
+        else:
+            keys = get_closure_single(attributes)
+    return keys
+
 
 
     # TODO: Find the closure for composite attributes
 
 
 closure_result = get_closure(combination)
-print("closure res", closure_result)
-#closure_result = list(dict.fromkeys(closure_result))
 
-if len(closure_result) == len(attribute_lst):
-    print("Final: ", closure_result )
-    print("Key: ", combination)
-
+if len(list("".join(closure_result))) == len(attribute_lst):
+    #print("Final: ", closure_result )
+    print("Key: ", combination) 
+else:
+    perm = ["".join((x,y)) for x in attributes_both_left_right for y in combination] # TODO Check what this returns
+    #print("perm ", perm)
+    print("Key: ", get_closure(perm)) 
+ 
 
 
 
