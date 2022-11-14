@@ -7,7 +7,7 @@ def remove_duplicates(str):
             newStr = newStr + c
     return newStr
 
-def remove_similar_elemnts(lst):
+def remove_similar_elements(lst):
     """Removes an element from the list if another similar element is found.
     
     E.g.
@@ -82,6 +82,11 @@ def categorize_attributes(fd_lst, attr_lst):
     for attribute in attr_lst:
         if attribute.replace(" ", "") not in "".join(joined_lst):
             attributes_not_left_right.append(attribute.replace(" ", ""))
+            
+    attributes_left = remove_similar_elements(attributes_left)
+    attributes_right = remove_similar_elements(attributes_right)
+    attributes_not_left_right = remove_similar_elements(attributes_not_left_right)
+    attributes_both_left_right = remove_similar_elements(attributes_both_left_right)
     return attributes_left, attributes_right, attributes_not_left_right, attributes_both_left_right
 
 
@@ -110,8 +115,8 @@ def compute_closure(attributes, fd_lst):
     default_deter_depend_lst = get_determinant_and_dependent_attr(fd_lst)
     updated_determinant_lst = update_dependencies(default_deter_depend_lst)
     final_determinant_lst = update_dependencies(updated_determinant_lst)
-    
-    attribute_combinatons = ["".join((x,y)) for x in attributes for y in attributes] + [x for x in attributes]
+    attribute_combinatons = ["".join((x,y,)) for x in attributes for y in attributes] + [x for x in attributes]
+    #print(attribute_combinatons)
     for i in range(len(attribute_combinatons)):
         for j in range(len(default_deter_depend_lst)):
             if attribute_combinatons[i] == final_determinant_lst[j][0]:
@@ -165,7 +170,14 @@ def find_key(possible_keys, attribute_lst, fd_lst):
         for i in closure_result:
             if len(i[1]) == len(attribute_lst):
                 result.append(i[0])
-        result = remove_similar_elemnts(result)
+        if len(result) == 0:
+            permutations = ["".join((x,y,z)) for x in attributes_both_left_right for y in possible_keys for z in attributes_both_left_right]
+            permutations = remove_similar_elements(permutations)
+            closure_result = get_closure(permutations, fd_lst)
+        for i in closure_result:
+            if len(i[1]) == len(attribute_lst):
+                result.append(i[0])
+        result = remove_similar_elements(result)
         return result
 
 
@@ -185,5 +197,5 @@ if __name__ == '__main__':
         possible_key = attributes_both_left_right
     else:
         possible_key = ["".join(attributes_not_left_right + attributes_left)] 
-
+        
     print(f"Key(s): {find_key(possible_key, attribute_lst, functional_depend_lst)}\n")
