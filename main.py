@@ -116,7 +116,6 @@ def compute_closure(attributes, fd_lst):
     updated_determinant_lst = update_dependencies(default_deter_depend_lst)
     final_determinant_lst = update_dependencies(updated_determinant_lst)
     attribute_combinatons = ["".join((x,y,)) for x in attributes for y in attributes] + [x for x in attributes]
-    #print(attribute_combinatons)
     for i in range(len(attribute_combinatons)):
         for j in range(len(default_deter_depend_lst)):
             if attribute_combinatons[i] == final_determinant_lst[j][0]:
@@ -134,15 +133,17 @@ def get_closure(attributes, fd_lst):
             # Seperate attribute if it is a composite
             seperated_attributes = " ".join(attr).replace(" ", "") 
             closure = ""
+            
             for attribute in seperated_attributes:
                 # Get the closure for each attribute
                 closure = (closure + compute_closure(attribute, fd_lst)).replace(" ", "")
                 closure = remove_duplicates(closure)
+                
             # Take the calculated closure from before and find its closure
-            for attribute in closure:
-                final_closure =  compute_closure(closure, fd_lst).replace(" ", "")
-                final_closure = remove_duplicates(final_closure)
-            closure_res.append((seperated_attributes, final_closure))
+            for _ in range(len(closure)):
+                closure = compute_closure(closure, fd_lst).replace(" ", "")
+                closure = remove_duplicates(closure)
+            closure_res.append((seperated_attributes, closure))
         else:
             closure = ""
             closure = closure + compute_closure(attr, fd_lst).replace(" ", "")
