@@ -183,20 +183,23 @@ def find_key(possible_keys, attribute_lst, fd_lst):
 
 
 if __name__ == '__main__':
-    attribute_lst, functional_depend_lst = get_input()
-    attributes_left, attributes_right, attributes_not_left_right, attributes_both_left_right = categorize_attributes(functional_depend_lst, attribute_lst)
+    try:
+        attribute_lst, functional_depend_lst = get_input()
+        attributes_left, attributes_right, attributes_not_left_right, attributes_both_left_right = categorize_attributes(functional_depend_lst, attribute_lst)
 
-    print("-"*50)
-    print("Attributes: ", attribute_lst)
-    print("Left: ", attributes_left)
-    print("Right: ", attributes_right) 
-    print("Neither left or right: ", attributes_not_left_right) 
-    print("Both left and right: ", attributes_both_left_right)
-    print("-"*50)
+        print("-"*50)
+        print("Attributes: ", attribute_lst)
+        print("Left: ", attributes_left)
+        print("Right: ", attributes_right) 
+        print("Neither left or right: ", attributes_not_left_right) 
+        print("Both left and right: ", attributes_both_left_right)
+        print("-"*50)
 
-    if len(attributes_not_left_right + attributes_left) == 0:
-        possible_key = attributes_both_left_right
-    else:
-        possible_key = ["".join(attributes_not_left_right + attributes_left)] 
-        
-    print(f"Key(s): {find_key(possible_key, attribute_lst, functional_depend_lst)}\n")
+        if len(attributes_not_left_right + attributes_left) == 0:
+            possible_key = attributes_both_left_right
+        else:
+            possible_key = ["".join(attributes_not_left_right + attributes_left)] 
+            
+        print(f"Key(s): {find_key(possible_key, attribute_lst, functional_depend_lst)}\n")
+    except:
+        print("Invalid input.")
