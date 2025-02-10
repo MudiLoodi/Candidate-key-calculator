@@ -11,8 +11,7 @@ Categorizes attributes based on their role in dependencies:
 
 then finds candidate keys (minimal sets of attributes that uniquely determine all other attributes).
 
-#### Use Case: This tool is particularly useful for:
-
+#### Use Case:
 * Database design and normalization
 * Understanding data dependencies
 * Identifying primary keys
